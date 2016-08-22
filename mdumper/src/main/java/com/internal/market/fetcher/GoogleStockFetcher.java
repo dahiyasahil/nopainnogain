@@ -109,10 +109,10 @@ public class GoogleStockFetcher implements Fetcher {
 			
 			if (data.size() > 0) {
 				infoObj = new BasicStockInfo();
-				infoObj.setDate(data.get(0).text());
+				infoObj.setDate(data.get(0).text().replace(' ', '/'));
 				//System.out.println("Date: " + data.get(0).text());
 				
-				infoObj.setClose(data.get(1).text());
+				infoObj.setOpen(data.get(1).text());
 				//System.out.println("Open: " + data.get(1).text());
 				
 				infoObj.setHigh(data.get(2).text());
