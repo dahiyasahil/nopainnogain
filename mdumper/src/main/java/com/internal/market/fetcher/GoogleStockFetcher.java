@@ -105,7 +105,6 @@ public class GoogleStockFetcher implements Fetcher {
 		Elements rows = doc.select("tr");
 		BasicStockInfo infoObj = null;
 		for (Element row : rows) {
-			System.out.println("---------");
 			Elements data = row.getElementsByTag("td");
 			
 			if (data.size() > 0) {
