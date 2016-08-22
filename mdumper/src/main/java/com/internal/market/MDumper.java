@@ -24,6 +24,7 @@ public class MDumper {
 	private static String baseUrl = "http://www.google.com/finance/info?q=";
 	private static String stockMarketName = "NSE";
 	private static String companyName = "sbin";
+	private static String baseResourceDir = "src/test/resources/";
 
 	public static void main(String[] args) {
 
@@ -41,6 +42,8 @@ public class MDumper {
 				GoogleStockFetcher stockFetcher = new GoogleStockFetcher(baseUrl, (HttpClient) webClient);
 				
 				List<BasicStockInfo> infoObjList = (List<BasicStockInfo>)stockFetcher.fetchHistoricData(stockMarketName, "sbin", "2016", "Apr", "1", "2016", "Apr", "30");
+				
+				DumperUtils.dumpToFile(infoObjList, baseResourceDir + "/histData-sbin.txt");
 				
 				for(String stock: stockList) {
 					GoogleStockInfoResponseObject googleResObject = (GoogleStockInfoResponseObject) stockFetcher.fetchMarketFeeds(stockMarketName, stock);
