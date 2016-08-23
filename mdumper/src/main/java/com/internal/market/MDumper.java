@@ -12,8 +12,8 @@ import java.util.Map;
 
 import org.apache.http.client.HttpClient;
 
-import com.internal.market.fetcher.Fetcher;
 import com.internal.market.fetcher.GoogleStockFetcher;
+import com.internal.market.fetcher.PeriodicStockDataCollector;
 import com.internal.market.fetcher.internal.TechPaisaStockIndicatorFetcher;
 import com.internal.market.object.BasicStockInfo;
 import com.internal.market.object.GoogleStockInfoResponseObject;
@@ -32,45 +32,41 @@ public class MDumper {
 		Map<String, GoogleStockInfoResponseObject> stockInfoMap = new HashMap<String, GoogleStockInfoResponseObject>();
 		
 		
-		List<String> stockList = new ArrayList<String>(Arrays.asList("unionbank", "Arvind", "sbin",
-				"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit","escorts","sintex","ncc", "hindalco", "powergrid"));
-		
+		List<String> stockList = new ArrayList<String>(Arrays.asList("bhel", "unionbank", "Arvind", "sbin",
+				"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit","escorts","sintex","ncc", "hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem"));
+		GoogleStockFetcher stockFetcher = null;
 		try {
 			Object webClient = RestClientFactory.createRESTClient(DumperUtils.APACHE_HTTP_CLIENT);
 
 			if (webClient != null) {
-				GoogleStockFetcher stockFetcher = new GoogleStockFetcher(baseUrl, (HttpClient) webClient);
+				stockFetcher = new GoogleStockFetcher(baseUrl, (HttpClient) webClient);
 				
-				List<BasicStockInfo> infoObjList = (List<BasicStockInfo>)stockFetcher.fetchHistoricData(stockMarketName, "sbin", "2016", "Apr", "1", "2016", "Apr", "30");
-				
-				DumperUtils.dumpToFile(infoObjList, baseResourceDir + "/histData-sbin.txt");
-				
-				for(String stock: stockList) {
-					GoogleStockInfoResponseObject googleResObject = (GoogleStockInfoResponseObject) stockFetcher.fetchMarketFeeds(stockMarketName, stock);
-					stockInfoMap.put(stock, googleResObject);
-					
-				}
+//				List<BasicStockInfo> infoObjList = (List<BasicStockInfo>)stockFetcher.fetchHistoricData(stockMarketName, "sbin", "2016", "Jan", "1", "2016", "Aug", "19");
+//				
+//				DumperUtils.dumpToFile(infoObjList, baseResourceDir + "/histData-sbin.txt");
+//				
+				stockInfoMap =  (Map<String, GoogleStockInfoResponseObject>) stockFetcher.fetchMarketFeeds(stockMarketName, stockList);
 				
 				
 				TechPaisaStockIndicatorFetcher techPaisaStockIndicatorFetcher = new TechPaisaStockIndicatorFetcher(null,
 						"http://techpaisa.com/stock/", (HttpClient) webClient);
 
-				for(String stock: stockList) {
-					Float strength = techPaisaStockIndicatorFetcher.getAvgTechnicalStrengthOfStock(stockMarketName, stock);
-					stockStrengthMap.put(stock, strength);
+				stockStrengthMap = techPaisaStockIndicatorFetcher.getAvgTechnicalStrengthOfStock(stockMarketName, stockList);
 					
-				}
 
 				Map<String, Float> map = sortByValue(stockStrengthMap);
 				for (Map.Entry<String, Float> entry : map.entrySet()) {
-					System.out.println(entry.getKey() + " : " + entry.getValue());
-					System.out.println("    price: " + stockInfoMap.get(entry.getKey()).getL());
+					System.out.println(entry.getKey().toUpperCase() + " : Strength =  " + entry.getValue() + ", Mkt Price = " + stockInfoMap.get(entry.getKey()).getL());
+					//System.out.println("    price: " + stockInfoMap.get(entry.getKey()).getL());
 				}
 
 			} else {
 				System.out.println("web clients  found null");
 
 			}
+			
+			PeriodicStockDataCollector periodicStockDataCollector = new PeriodicStockDataCollector(stockFetcher, 60, "NSE", stockList);
+			periodicStockDataCollector.startCollection();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

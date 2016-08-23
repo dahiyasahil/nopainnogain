@@ -1,7 +1,12 @@
 package com.internal.market.fetcher;
 
+import java.util.List;
+
+/*
+ * Marker interface to specify the Class will be used for collecting stock market related data from remote source.
+ * 
+ */
 public interface Fetcher {
 	
-	public Object fetchMarketFeeds(String stockMarketName, String company);
-
+	Object fetchMarketFeeds(String stockMarketName, List<String> company);
 }

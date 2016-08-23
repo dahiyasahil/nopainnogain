@@ -11,7 +11,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.httpclient.ChunkedInputStream;
 import org.apache.http.HttpEntity;
@@ -99,82 +101,85 @@ public class GoogleStockFetcher implements Fetcher {
 		int endIndex = responseStr.indexOf("</table>", startIndex);
 
 		String table = responseStr.substring(startIndex, endIndex);
-		
+
 		List<BasicStockInfo> infoObjList = new ArrayList<BasicStockInfo>();
 		Document doc = Jsoup.parse(table, "UTF-8");
 		Elements rows = doc.select("tr");
 		BasicStockInfo infoObj = null;
 		for (Element row : rows) {
 			Elements data = row.getElementsByTag("td");
-			
+
 			if (data.size() > 0) {
 				infoObj = new BasicStockInfo();
-				infoObj.setDate(data.get(0).text().replace(' ', '/'));
-				//System.out.println("Date: " + data.get(0).text());
-				
+				infoObj.setDate(data.get(0).text().replace(' ', '/').replace(',', ' '));
+				// System.out.println("Date: " + data.get(0).text());
+
 				infoObj.setOpen(data.get(1).text());
-				//System.out.println("Open: " + data.get(1).text());
-				
+				// System.out.println("Open: " + data.get(1).text());
+
 				infoObj.setHigh(data.get(2).text());
-				//System.out.println("High: " + data.get(2).text());
-				
+				// System.out.println("High: " + data.get(2).text());
+
 				infoObj.setLow(data.get(3).text());
-				//System.out.println("Low: " + data.get(3).text());
-				
+				// System.out.println("Low: " + data.get(3).text());
+
 				infoObj.setClose(data.get(4).text());
-				//System.out.println("Close: " + data.get(4).text());
-				
+				// System.out.println("Close: " + data.get(4).text());
+
 				infoObj.setVolume(data.get(5).text());
-				//System.out.println("Volume: " + data.get(5).text());
-				
+				// System.out.println("Volume: " + data.get(5).text());
+
 				infoObjList.add(infoObj);
-				
+
 			}
 		}
 		return infoObjList;
 	}
 
-	public Object fetchMarketFeeds(String stockMarketName, String company) {
-		String url = baseUrl + stockMarketName + ":" + company;
-		// System.out.println("url = " + url);
+	public Object fetchMarketFeeds(String stockMarketName, List<String> companies) {
 
-		HttpGet request = new HttpGet(url);
+		Map<String, Object> resObj = new HashMap<String, Object>();
+		
+		for (String company : companies) {
+			String url = baseUrl + stockMarketName + ":" + company;
+			// System.out.println("url = " + url);
 
-		String responseStr = null;
+			HttpGet request = new HttpGet(url);
 
-		try {
-			HttpResponse response = webClient.execute(request);
+			String responseStr = null;
 
-			if (response.getStatusLine().getStatusCode() == 200) {
+			try {
+				HttpResponse response = webClient.execute(request);
 
-				HttpEntity entity = response.getEntity();
-				responseStr = EntityUtils.toString(entity);
-				// System.out.println(responseStr);
+				if (response.getStatusLine().getStatusCode() == 200) {
 
-				String token[] = responseStr.split("//");
+					HttpEntity entity = response.getEntity();
+					responseStr = EntityUtils.toString(entity);
+					// System.out.println(responseStr);
 
-				String jsonStr = token[1].substring(2, token[1].length() - 2);
-				ObjectMapper mapper = new ObjectMapper();
+					String token[] = responseStr.split("//");
 
-				GoogleStockInfoResponseObject googleRes = mapper.readValue(jsonStr,
-						GoogleStockInfoResponseObject.class);
+					String jsonStr = token[1].substring(2, token[1].length() - 2);
+					ObjectMapper mapper = new ObjectMapper();
 
-				// System.out.println(googleRes.toString());
+					GoogleStockInfoResponseObject googleRes = mapper.readValue(jsonStr,
+							GoogleStockInfoResponseObject.class);
 
-				return googleRes;
-			} else {
-				System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
-				return null;
+					// System.out.println(googleRes.toString());
+					resObj.put(company, googleRes);
+				} else {
+					System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
+					return null;
+				}
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
-		return responseStr;
+		return resObj;
 	}
 
 }

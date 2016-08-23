@@ -18,7 +18,14 @@ public class GoogleStockInfoResponseObject {
 	String l_fix;
 	String lt_dts;
 	String pcls_fix;
-	
+	/*
+	 * String representation for csv, in-order = id, t, e , l, l_cur, s, ltt, lt , c , c_fix, cp , cp_fix, ccol, l_fix, lt_dta, pcls_fix;
+	 * (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return id + "," + t + "," + e + "," + l + "," + l_cur + "," + s + "," + ltt + "," + lt + "," + c + "," + c_fix + "," + cp + "," + cp_fix + "," + ccol + "," + l_fix + "," + lt_dts + "," + pcls_fix;
+	}
 	public String getC_fix() {
 		return c_fix;
 	}

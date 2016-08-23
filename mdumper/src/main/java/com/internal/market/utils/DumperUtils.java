@@ -4,35 +4,39 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.internal.market.object.BasicStockInfo;
 
 public class DumperUtils {
-	
+
 	public final static String APACHE_HTTP_CLIENT = "APACHE_HTTP_CLIENT";
-	
 
 	public static void dumpToFile(List<BasicStockInfo> infoObjList, String fileName) {
 		// TODO Auto-generated method stub
 		File file = new File(fileName);
 		FileOutputStream fout;
-		
+
 		BufferedWriter writer = null;
 		try {
 			fout = new FileOutputStream(file);
 			writer = new BufferedWriter(new OutputStreamWriter(fout));
-			
+
 			writer.write("Date,Open,High,Low,Close,Volume\n");
 			for (BasicStockInfo obj : infoObjList) {
 				writer.write(obj.toString());
 				writer.write("\n");
 			}
 			writer.flush();
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -40,7 +44,7 @@ public class DumperUtils {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} finally {
-			if ( writer != null) {
+			if (writer != null) {
 				try {
 					writer.flush();
 					writer.close();
@@ -50,7 +54,41 @@ public class DumperUtils {
 				}
 			}
 		}
-		
+
 	}
-	
+
+	public static void dumpToFile(Map<String, List<Object>> results) {
+		// TODO Auto-generated method stub
+		Iterator<Entry<String, List<Object>>> it = results.entrySet().iterator();
+		String baseOutputDir = "src/test/output/";
+		while (it.hasNext()) {
+			Entry<String, List<Object>> entry = it.next();
+
+			BufferedWriter bw = null;
+			PrintWriter out = null;
+			FileWriter fw = null;
+			try {
+				fw = new FileWriter(baseOutputDir + entry.getKey() + ".txt", true);
+				bw = new BufferedWriter(fw);
+				out = new PrintWriter(bw);
+				for(Object obj : entry.getValue()) {
+					out.println(obj.toString());
+				}
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				if (fw != null )
+				try {
+					fw.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+			}
+		}
+
+	}
+
 }
