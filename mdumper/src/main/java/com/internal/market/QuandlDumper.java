@@ -12,37 +12,25 @@ import java.util.Map;
 
 import org.apache.http.client.HttpClient;
 
-import com.internal.market.fetcher.GoogleStockFetcher;
-import com.internal.market.fetcher.PeriodicStockDataCollector;
 import com.internal.market.fetcher.QuandlDataFetcher;
-import com.internal.market.fetcher.internal.TechPaisaStockIndicatorFetcher;
 import com.internal.market.object.BasicStockInfo;
-import com.internal.market.object.GoogleStockInfoResponseObject;
 import com.internal.market.utils.DumperUtils;
 
 public class QuandlDumper {
 
-	private static String baseUrl = "http://www.google.com/finance/info?q=";
-	private static String stockMarketName = "NSE";
-	private static String companyName = "sbin";
-	private static String baseResourceDir = "src/test/resources/";
 
 	public static void main(String[] args) {
 
-		Map<String, Float> stockStrengthMap = new HashMap<String, Float>();
-		Map<String, GoogleStockInfoResponseObject> stockInfoMap = new HashMap<String, GoogleStockInfoResponseObject>();
 
-		List<String> stockList = new ArrayList<String>(Arrays.asList("CNX_NIFTY", "CNX_COMMODITIES","CNX_ENERGY", "CNX_PHARMA","CNX_INFRA","CNX_AUTO","CNX_MIDCAP","CNX_PSU_BANK","CNX_BANK","bhel", "unionbank", "Arvind", "sbin",
-				"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit", "escorts", "sintex", "ncc",
-				"hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet"));
-		GoogleStockFetcher stockFetcher = null;
 		try {
 			HttpClient webClient = (HttpClient) RestClientFactory.createRESTClient(DumperUtils.APACHE_HTTP_CLIENT);
-			// webClient.getParams().setIntParameter(name, value)
 
 			QuandlDataFetcher fetcher = new QuandlDataFetcher(webClient);
 
-			for (String stock : stockList) {
+			List<String> stocks = new ArrayList<String>();
+			stocks.addAll(DumperUtils.stockGroups);
+			stocks.addAll(DumperUtils.stockList);
+			for (String stock : stocks) {
 				List<BasicStockInfo> data = (List<BasicStockInfo>) fetcher.fetchHistoricData("NSE",
 						stock.toUpperCase());
 
@@ -61,26 +49,4 @@ public class QuandlDumper {
 
 	}
 
-	private static Map<String, Float> sortByValue(Map<String, Float> unsortMap) {
-
-		// 1. Convert Map to List of Map
-		List<Map.Entry<String, Float>> list = new LinkedList<Map.Entry<String, Float>>(unsortMap.entrySet());
-
-		// 2. Sort list with Collections.sort(), provide a custom Comparator
-		// Try switch the o1 o2 position for a different order
-		Collections.sort(list, new Comparator<Map.Entry<String, Float>>() {
-			public int compare(Map.Entry<String, Float> o1, Map.Entry<String, Float> o2) {
-				return (o2.getValue()).compareTo(o1.getValue());
-			}
-		});
-
-		// 3. Loop the sorted list and put it into a new insertion order Map
-		// LinkedHashMap
-		Map<String, Float> sortedMap = new LinkedHashMap<String, Float>();
-		for (Map.Entry<String, Float> entry : list) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
-
-		return sortedMap;
-	}
 }

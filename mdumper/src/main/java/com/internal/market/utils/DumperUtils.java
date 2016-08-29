@@ -10,8 +10,13 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -20,9 +25,15 @@ import com.internal.market.object.BasicStockInfo;
 
 public class DumperUtils {
 
+	public static List<String> stockList = new ArrayList<String>(Arrays.asList("bhel", "unionbank", "Arvind", "sbin",
+			"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit", "escorts", "sintex", "ncc",
+			"hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet"));
+	
+	public static List<String> stockGroups = new ArrayList<String>(Arrays.asList("CNX_NIFTY", "CNX_COMMODITIES","CNX_ENERGY", "CNX_PHARMA","CNX_INFRA","CNX_AUTO","CNX_MIDCAP","CNX_PSU_BANK","CNX_BANK"));
+	
 	public final static String APACHE_HTTP_CLIENT = "APACHE_HTTP_CLIENT";
 	
-	static SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy");
+	public static SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy");
 	
 	public static final String baseOutputDir = "src/test/output/";
 
@@ -125,4 +136,66 @@ public class DumperUtils {
 
 	}
 
+	public static void dumpStrengthToFile(Map<String, Float> map, String filename) {
+		// TODO Auto-generated method stub
+
+		// TODO Auto-generated method stub
+		File file = new File(baseOutputDir + filename);
+		FileOutputStream fout;
+
+		BufferedWriter writer = null;
+		try {
+			fout = new FileOutputStream(file);
+			writer = new BufferedWriter(new OutputStreamWriter(fout));
+
+			for (Map.Entry<String, Float> entry : map.entrySet()) {
+				writer.write(entry.getKey().toUpperCase() + "=" + entry.getValue());
+				writer.write("\n");
+			}
+			
+			writer.flush();
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			if (writer != null) {
+				try {
+					writer.flush();
+					writer.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+	
+	}
+
+	public static Map<String, Float> sortByValue(Map<String, Float> unsortMap) {
+
+		// 1. Convert Map to List of Map
+		List<Map.Entry<String, Float>> list = new LinkedList<Map.Entry<String, Float>>(unsortMap.entrySet());
+
+		// 2. Sort list with Collections.sort(), provide a custom Comparator
+		// Try switch the o1 o2 position for a different order
+		Collections.sort(list, new Comparator<Map.Entry<String, Float>>() {
+			public int compare(Map.Entry<String, Float> o1, Map.Entry<String, Float> o2) {
+				return (o2.getValue()).compareTo(o1.getValue());
+			}
+		});
+
+		// 3. Loop the sorted list and put it into a new insertion order Map
+		// LinkedHashMap
+		Map<String, Float> sortedMap = new LinkedHashMap<String, Float>();
+		for (Map.Entry<String, Float> entry : list) {
+			sortedMap.put(entry.getKey(), entry.getValue());
+		}
+
+		return sortedMap;
+	}
 }

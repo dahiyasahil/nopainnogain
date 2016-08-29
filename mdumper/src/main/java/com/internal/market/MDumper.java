@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -54,19 +55,22 @@ public class MDumper {
 				stockStrengthMap = techPaisaStockIndicatorFetcher.getAvgTechnicalStrengthOfStock(stockMarketName, stockList);
 					
 
-				Map<String, Float> map = sortByValue(stockStrengthMap);
+				Map<String, Float> map = DumperUtils.sortByValue(stockStrengthMap);
 				for (Map.Entry<String, Float> entry : map.entrySet()) {
 					System.out.println(entry.getKey().toUpperCase() + " : Strength =  " + entry.getValue() + ", Mkt Price = " + stockInfoMap.get(entry.getKey()).getL());
+					
 					//System.out.println("    price: " + stockInfoMap.get(entry.getKey()).getL());
 				}
+				String date = DumperUtils.sdf.format(new Date());
+				DumperUtils.dumpStrengthToFile(map, "Strength-" +  date);
 
 			} else {
 				System.out.println("web clients  found null");
 
 			}
 			
-			PeriodicStockDataCollector periodicStockDataCollector = new PeriodicStockDataCollector(stockFetcher, 15, "NSE", stockList);
-			periodicStockDataCollector.startCollection();
+//			PeriodicStockDataCollector periodicStockDataCollector = new PeriodicStockDataCollector(stockFetcher, 15, "NSE", stockList);
+//			periodicStockDataCollector.startCollection();
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -75,26 +79,5 @@ public class MDumper {
 
 	}
 
-	private static Map<String, Float> sortByValue(Map<String, Float> unsortMap) {
-
-		// 1. Convert Map to List of Map
-		List<Map.Entry<String, Float>> list = new LinkedList<Map.Entry<String, Float>>(unsortMap.entrySet());
-
-		// 2. Sort list with Collections.sort(), provide a custom Comparator
-		// Try switch the o1 o2 position for a different order
-		Collections.sort(list, new Comparator<Map.Entry<String, Float>>() {
-			public int compare(Map.Entry<String, Float> o1, Map.Entry<String, Float> o2) {
-				return (o2.getValue()).compareTo(o1.getValue());
-			}
-		});
-
-		// 3. Loop the sorted list and put it into a new insertion order Map
-		// LinkedHashMap
-		Map<String, Float> sortedMap = new LinkedHashMap<String, Float>();
-		for (Map.Entry<String, Float> entry : list) {
-			sortedMap.put(entry.getKey(), entry.getValue());
-		}
-
-		return sortedMap;
-	}
+	
 }

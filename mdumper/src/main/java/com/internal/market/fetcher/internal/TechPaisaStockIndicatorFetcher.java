@@ -66,7 +66,7 @@ public class TechPaisaStockIndicatorFetcher implements Fetcher {
 				HttpResponse response = webClient.execute(request);
 				System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
 				HttpEntity entity = response.getEntity();
-				resObj.put(company,EntityUtils.toString(entity));
+				resObj.put(company, EntityUtils.toString(entity));
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -96,9 +96,15 @@ public class TechPaisaStockIndicatorFetcher implements Fetcher {
 				HttpResponse response = webClient.execute(request);
 				// System.out.println("Response Code : "
 				// + response.getStatusLine().getStatusCode());
-				HttpEntity entity = response.getEntity();
-				responseStr = EntityUtils.toString(entity);
-				resObj.put(company, parseResponseForTechnicalStrenght(responseStr));
+				if (response.getStatusLine().getStatusCode() == 200) {
+					HttpEntity entity = response.getEntity();
+					responseStr = EntityUtils.toString(entity);
+					resObj.put(company, parseResponseForTechnicalStrenght(responseStr));
+				} else {
+					System.out.println("Error: Response code = " + response.getStatusLine().getStatusCode());
+					System.out.println("Error: url = " + url);
+					resObj.put(company, null);
+				}
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
