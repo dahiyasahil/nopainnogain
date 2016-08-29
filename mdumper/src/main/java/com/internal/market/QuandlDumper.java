@@ -32,7 +32,7 @@ public class QuandlDumper {
 		Map<String, Float> stockStrengthMap = new HashMap<String, Float>();
 		Map<String, GoogleStockInfoResponseObject> stockInfoMap = new HashMap<String, GoogleStockInfoResponseObject>();
 
-		List<String> stockList = new ArrayList<String>(Arrays.asList("bhel", "unionbank", "Arvind", "sbin",
+		List<String> stockList = new ArrayList<String>(Arrays.asList("CNX_NIFTY", "CNX_COMMODITIES","CNX_ENERGY", "CNX_PHARMA","CNX_INFRA","CNX_AUTO","CNX_MIDCAP","CNX_PSU_BANK","CNX_BANK","bhel", "unionbank", "Arvind", "sbin",
 				"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit", "escorts", "sintex", "ncc",
 				"hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet"));
 		GoogleStockFetcher stockFetcher = null;

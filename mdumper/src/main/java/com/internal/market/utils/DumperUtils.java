@@ -36,7 +36,7 @@ public class DumperUtils {
 			fout = new FileOutputStream(file);
 			writer = new BufferedWriter(new OutputStreamWriter(fout));
 
-			writer.write("Date,Open,High,Low,Close,Volume\n");
+			//writer.write("Date,Open,High,Low,Close,Volume\n");
 			for (BasicStockInfo obj : infoObjList) {
 				writer.write(obj.toString());
 				writer.write("\n");
