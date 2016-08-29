@@ -21,12 +21,14 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.DecompressingEntity;
 import org.apache.http.client.entity.GzipDecompressingEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -51,6 +53,7 @@ public class GoogleStockFetcher implements Fetcher {
 
 	private String tableLineTag = "<table class=\"gf-table historical_price\">";
 
+	final RequestConfig params = RequestConfig.custom().setConnectTimeout(3000).setSocketTimeout(3000).build();
 	public GoogleStockFetcher(String url, HttpClient webClient) throws Exception {
 
 		this.baseUrl = url;
@@ -69,6 +72,7 @@ public class GoogleStockFetcher implements Fetcher {
 				+ endMonth + "+" + endDay + "+" + endYear;
 
 		HttpGet request = new HttpGet(url);
+		request.setConfig(params);
 		request.setHeader(HttpHeaders.ACCEPT_ENCODING, "gzip");
 
 		HttpResponse response = null;
@@ -145,7 +149,7 @@ public class GoogleStockFetcher implements Fetcher {
 			// System.out.println("url = " + url);
 
 			HttpGet request = new HttpGet(url);
-
+			request.setConfig(params);
 			String responseStr = null;
 
 			try {
@@ -169,7 +173,7 @@ public class GoogleStockFetcher implements Fetcher {
 					resObj.put(company, googleRes);
 				} else {
 					System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
-					return null;
+					resObj.put(company, null);;
 				}
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block

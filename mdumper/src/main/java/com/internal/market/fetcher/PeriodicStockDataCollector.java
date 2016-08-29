@@ -15,8 +15,9 @@ public class PeriodicStockDataCollector implements Runnable {
 	private int timeIntervals = 15;
 	private String stockMarketName = null;
 	private List<String> companies = null;
-	private int maxBuffer = 1;
+	private int maxBuffer = 10;
 	private boolean isInterrupted = false;
+
 	/*
 	 * @Param Fetcher - fetcher used for collecting data from remote source
 	 * 
@@ -31,9 +32,10 @@ public class PeriodicStockDataCollector implements Runnable {
 
 	@SuppressWarnings("static-access")
 	public void run() {
+		Map<String, List<Object>> results = null;
 		// TODO Auto-generated method stub
-		Map<String, List<Object>> results = new HashMap<String, List<Object>>();
 		int count = 0;
+		results = new HashMap<String, List<Object>>();
 		while (!isInterrupted) {
 			try {
 				Thread.currentThread().sleep(timeIntervals * 1000);
@@ -44,17 +46,19 @@ public class PeriodicStockDataCollector implements Runnable {
 				List<Object> tmpList = null;
 				while (it.hasNext()) {
 					Entry<String, Object> entry = it.next();
-					if (!results.containsKey(entry.getKey())) {
-						tmpList = new ArrayList<Object>();
-						tmpList.add(entry.getValue());
-						results.put(entry.getKey(), tmpList);
-					} else {
-						tmpList = results.get(entry.getKey());
-						tmpList.add(entry.getValue());
+					if (entry.getValue() != null) {
+						if (!results.containsKey(entry.getKey())) {
+							tmpList = new ArrayList<Object>();
+							tmpList.add(entry.getValue());
+							results.put(entry.getKey(), tmpList);
+						} else {
+							tmpList = results.get(entry.getKey());
+							tmpList.add(entry.getValue());
+						}
 					}
 				}
 				count++;
-				if ( count > maxBuffer) {
+				if (count > maxBuffer) {
 					DumperUtils.dumpToFile(results);
 					results = new HashMap<String, List<Object>>();
 				}
@@ -71,7 +75,7 @@ public class PeriodicStockDataCollector implements Runnable {
 		// TODO Auto-generated method stub
 		new Thread(this).start();
 	}
-	
+
 	public void interrupt() {
 		this.isInterrupted = true;
 	}

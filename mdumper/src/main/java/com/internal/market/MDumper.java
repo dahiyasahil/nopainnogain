@@ -33,11 +33,11 @@ public class MDumper {
 		
 		
 		List<String> stockList = new ArrayList<String>(Arrays.asList("bhel", "unionbank", "Arvind", "sbin",
-				"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit","escorts","sintex","ncc", "hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem"));
+				"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit","escorts","sintex","ncc", "hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet"));
 		GoogleStockFetcher stockFetcher = null;
 		try {
-			Object webClient = RestClientFactory.createRESTClient(DumperUtils.APACHE_HTTP_CLIENT);
-
+			HttpClient webClient = (HttpClient) RestClientFactory.createRESTClient(DumperUtils.APACHE_HTTP_CLIENT);
+			//webClient.getParams().setIntParameter(name, value)
 			if (webClient != null) {
 				stockFetcher = new GoogleStockFetcher(baseUrl, (HttpClient) webClient);
 				
@@ -65,7 +65,7 @@ public class MDumper {
 
 			}
 			
-			PeriodicStockDataCollector periodicStockDataCollector = new PeriodicStockDataCollector(stockFetcher, 60, "NSE", stockList);
+			PeriodicStockDataCollector periodicStockDataCollector = new PeriodicStockDataCollector(stockFetcher, 15, "NSE", stockList);
 			periodicStockDataCollector.startCollection();
 
 		} catch (Exception e) {
