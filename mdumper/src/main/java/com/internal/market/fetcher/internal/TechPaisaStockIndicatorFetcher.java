@@ -5,14 +5,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.management.RuntimeErrorException;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.util.EntityUtils;
 
 import com.internal.market.fetcher.Fetcher;
+import com.internal.market.utils.HTTPClientUtil;
 
 public class TechPaisaStockIndicatorFetcher implements Fetcher {
 
@@ -61,31 +65,29 @@ public class TechPaisaStockIndicatorFetcher implements Fetcher {
 			System.out.println("url = " + url);
 
 			HttpGet request = new HttpGet(url);
+			HttpEntity entity = null;
 
-			try {
-				HttpResponse response = webClient.execute(request);
-				System.out.println("Response Code : " + response.getStatusLine().getStatusCode());
-				HttpEntity entity = response.getEntity();
-				resObj.put(company, EntityUtils.toString(entity));
-			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				entity = HTTPClientUtil.getResponseEntity(webClient, url);
+			
+				try {
+					resObj.put(company, EntityUtils.toString(entity));
+				} catch (ParseException | IOException e) {
+				}
+				HTTPClientUtil.close(entity);
+			
 
 		}
 		return resObj;
 	}
 
-	public Map<String, Float> getAvgTechnicalStrengthOfStock(String stockMarketName, List<String> companies) {
+	public Map<String, Float> getAvgTechnicalStrengthOfStock(List<String> companies) {
+		
 
 		Map<String, Float> resObj = new HashMap<String, Float>();
 
 		for (String company : companies) {
 
-			String url = baseUrlTechAnalysisDetials + company;
+			String url = baseUrlTechAnalysisDetials + company.trim();
 			// System.out.println("url = " + url);
 
 			HttpGet request = new HttpGet(url);
@@ -93,6 +95,7 @@ public class TechPaisaStockIndicatorFetcher implements Fetcher {
 			String responseStr = null;
 
 			try {
+				//need to figure out which market does it fetch this information from (default: NSE,nifty ??)
 				HttpResponse response = webClient.execute(request);
 				// System.out.println("Response Code : "
 				// + response.getStatusLine().getStatusCode());

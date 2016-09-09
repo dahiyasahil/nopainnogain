@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import au.com.bytecode.opencsv.CSVReader;
+import au.com.bytecode.opencsv.CSVWriter;
+
 import com.internal.market.object.BasicStockInfo;
 
 public class DumperUtils {
@@ -29,14 +32,45 @@ public class DumperUtils {
 			"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit", "escorts", "sintex", "ncc",
 			"hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet"));
 	
+	
 	public static List<String> stockGroups = new ArrayList<String>(Arrays.asList("CNX_NIFTY", "CNX_COMMODITIES","CNX_ENERGY", "CNX_PHARMA","CNX_INFRA","CNX_AUTO","CNX_MIDCAP","CNX_PSU_BANK","CNX_BANK"));
 	
 	public final static String APACHE_HTTP_CLIENT = "APACHE_HTTP_CLIENT";
 	
-	public static SimpleDateFormat sdf = new SimpleDateFormat("dd-M-yyyy");
+	public static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+	
+	private static final String PATH_TO_FUTURE_LIST = "src/main/resources/Futures.csv";
 	
 	public static final String baseOutputDir = "src/test/output/";
+	
+	
+	public static List<String> getAllFuturesStockList() {
 
+		CSVUtil csv = new CSVUtil();
+		List<String> allFuturesStockList = new ArrayList<String>();
+
+		String[] nextLine;
+		CSVReader reader = null;
+		try {
+			reader = csv.getReader(PATH_TO_FUTURE_LIST);
+			int i = 0;
+			while ((nextLine = reader.readNext()) != null) {
+				if (i > 0) {
+					allFuturesStockList.add(nextLine[1]);
+				}
+				i++;
+			}
+		} catch (IOException e) {
+
+		}
+
+		csv.close(reader);
+
+		return allFuturesStockList;
+	}
+	
+
+	
 	public static void dumpToFile(List<BasicStockInfo> infoObjList, String fileName) {
 		// TODO Auto-generated method stub
 		File file = new File(baseOutputDir + fileName);
@@ -136,47 +170,30 @@ public class DumperUtils {
 
 	}
 
-	public static void dumpStrengthToFile(Map<String, Float> map, String filename) {
-		// TODO Auto-generated method stub
+	public static void dumpStrengthToFile(Map<String, Float> map,String filename) {
 
-		// TODO Auto-generated method stub
-		File file = new File(baseOutputDir + filename);
-		FileOutputStream fout;
+		String file = baseOutputDir + filename;
 
-		BufferedWriter writer = null;
+		CSVUtil csv = new CSVUtil();
+		CSVWriter writer = null;
 		try {
-			fout = new FileOutputStream(file);
-			writer = new BufferedWriter(new OutputStreamWriter(fout));
-
-			for (Map.Entry<String, Float> entry : map.entrySet()) {
-				writer.write(entry.getKey().toUpperCase() + "=" + entry.getValue());
-				writer.write("\n");
-			}
-			
-			writer.flush();
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			writer = csv.getWriter(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} finally {
-			if (writer != null) {
-				try {
-					writer.flush();
-					writer.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
 		}
 
+		System.out.println("wrtier is "+writer);
+		csv.appendFile(writer, map);
+		csv.close(writer);
+
+	}
 	
+	public static Map<String, Float> sortByValue(Map<String, Float> unsortMap) {
+		
+		return sortByValue(unsortMap, unsortMap.size());
 	}
 
-	public static Map<String, Float> sortByValue(Map<String, Float> unsortMap) {
+	public static Map<String, Float> sortByValue(Map<String, Float> unsortMap, int size) {
 
 		// 1. Convert Map to List of Map
 		List<Map.Entry<String, Float>> list = new LinkedList<Map.Entry<String, Float>>(unsortMap.entrySet());
@@ -191,9 +208,16 @@ public class DumperUtils {
 
 		// 3. Loop the sorted list and put it into a new insertion order Map
 		// LinkedHashMap
+		int i =0;
 		Map<String, Float> sortedMap = new LinkedHashMap<String, Float>();
+	
 		for (Map.Entry<String, Float> entry : list) {
-			sortedMap.put(entry.getKey(), entry.getValue());
+				if(i < size){
+				sortedMap.put(entry.getKey(), entry.getValue());
+				i++;
+				}
+			
+
 		}
 
 		return sortedMap;
