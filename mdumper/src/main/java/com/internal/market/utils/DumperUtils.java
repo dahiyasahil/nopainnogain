@@ -29,8 +29,8 @@ import com.internal.market.object.BasicStockInfo;
 public class DumperUtils {
 
 	public static List<String> stockList = new ArrayList<String>(Arrays.asList("bhel", "unionbank", "Arvind", "sbin",
-			"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit", "escorts", "sintex", "ncc",
-			"hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet"));
+			"crompgreav", "dishman", "voltas", "pricol", "adanipower", "kpit", "escorts", "sintex", "ncc",
+			"hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet", "havellsindia", "tatapower", "havells", "exideind", "tatamtrdvr", "godrejcp", "m&mfin", "pfc"));
 	
 	
 	public static List<String> stockGroups = new ArrayList<String>(Arrays.asList("CNX_NIFTY", "CNX_COMMODITIES","CNX_ENERGY", "CNX_PHARMA","CNX_INFRA","CNX_AUTO","CNX_MIDCAP","CNX_PSU_BANK","CNX_BANK"));

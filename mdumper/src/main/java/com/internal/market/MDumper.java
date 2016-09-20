@@ -34,7 +34,7 @@ public class MDumper {
 		
 		
 		List<String> stockList = new ArrayList<String>(Arrays.asList("bhel", "unionbank", "Arvind", "sbin",
-				"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit","escorts","sintex","ncc", "hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet"));
+				"crompgreav", "dishman", "voltas", "arvind", "pricol", "adanipower", "kpit","escorts","sintex","ncc", "hindalco", "powergrid", "recltd", "apollotyre", "albk", "tatachem", "enginersin", "petronet", "tvsmotor", "jswsteel"));
 		GoogleStockFetcher stockFetcher = null;
 		try {
 			HttpClient webClient = (HttpClient) RestClientFactory.createRESTClient(DumperUtils.APACHE_HTTP_CLIENT);
