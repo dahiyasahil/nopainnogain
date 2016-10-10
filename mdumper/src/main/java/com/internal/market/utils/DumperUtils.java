@@ -41,7 +41,7 @@ public class DumperUtils {
 	
 	private static final String PATH_TO_FUTURE_LIST = "src/main/resources/Futures.csv";
 	
-	public static final String baseOutputDir = "src/test/output/";
+	public static final String baseOutputDir = "src/main/resources/data/";
 	
 	
 	public static List<String> getAllFuturesStockList() {
@@ -172,7 +172,7 @@ public class DumperUtils {
 
 	public static void dumpStrengthToFile(Map<String, Float> map,String filename) {
 
-		String file = baseOutputDir + filename;
+		String file = baseOutputDir + "/hist-strength/" + filename;
 
 		CSVUtil csv = new CSVUtil();
 		CSVWriter writer = null;

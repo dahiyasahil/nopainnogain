@@ -52,7 +52,7 @@ public class MDumper {
 				TechPaisaStockIndicatorFetcher techPaisaStockIndicatorFetcher = new TechPaisaStockIndicatorFetcher(null,
 						"http://techpaisa.com/stock/", (HttpClient) webClient);
 
-				stockStrengthMap = techPaisaStockIndicatorFetcher.getAvgTechnicalStrengthOfStock(stockMarketName, stockList);
+				stockStrengthMap = techPaisaStockIndicatorFetcher.getAvgTechnicalStrengthOfStock(stockList);
 					
 
 				Map<String, Float> map = DumperUtils.sortByValue(stockStrengthMap);

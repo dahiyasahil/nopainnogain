@@ -30,7 +30,7 @@ public class TechPaisaDumper {
 				stockStrengthMap = techPaisaStockIndicatorFetcher.getAvgTechnicalStrengthOfStock(DumperUtils.getAllFuturesStockList() );
 					
 				//Pass the second int parameter if the result should be TOP 10 or TOP 5, otherwise the parameter should'nt be passed to get the strength of all futures.
-				Map<String, Float> map = DumperUtils.sortByValue(stockStrengthMap,10);
+				Map<String, Float> map = DumperUtils.sortByValue(stockStrengthMap,172);
 				for (Map.Entry<String, Float> entry : map.entrySet()) {
 					System.out.println(entry.getKey().toUpperCase() + " : Strength =  " + entry.getValue());
 					
